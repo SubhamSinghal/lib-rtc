@@ -5459,10 +5459,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var TESTS = exports.TESTS = {
   AUDIOCAPTURE: 'Audio capture',
-  CHECKRESOLUTION240: 'Check resolution 320x240',
+  /*CHECKRESOLUTION240: 'Check resolution 320x240',
   CHECKRESOLUTION480: 'Check resolution 640x480',
   CHECKRESOLUTION720: 'Check resolution 1280x720',
-  CHECKSUPPORTEDRESOLUTIONS: 'Check supported resolutions',
+  CHECKSUPPORTEDRESOLUTIONS: 'Check supported resolutions',*/
   DATATHROUGHPUT: 'Data throughput',
   IPV6ENABLED: 'Ipv6 enabled',
   NETWORKLATENCY: 'Network latency',
@@ -5470,13 +5470,13 @@ var TESTS = exports.TESTS = {
   UDPENABLED: 'Udp enabled',
   TCPENABLED: 'Tcp enabled',
   VIDEOBANDWIDTH: 'Video bandwidth',
-  RELAYCONNECTIVITY: 'Relay connectivity',
+  /*RELAYCONNECTIVITY: 'Relay connectivity',*/
   REFLEXIVECONNECTIVITY: 'Reflexive connectivity',
   HOSTCONNECTIVITY: 'Host connectivity'
 };
 
 var SUITES = exports.SUITES = {
-  CAMERA: 'Camera',
+  /*CAMERA: 'Camera',*/
   MICROPHONE: 'Microphone',
   NETWORK: 'Network',
   CONNECTIVITY: 'Connectivity',
@@ -5538,7 +5538,7 @@ function buildNetworkSuite(config, filter) {
     // Test whether it can connect via UDP to a TURN server
     // Get a TURN config, and try to get a relay candidate using UDP.
     networkSuite.add(new _testCase2.default(networkSuite, TESTS.UDPENABLED, function (test) {
-      var networkTest = new _net2.default(test, 'udp', null, _call2.default.isRelay);
+      var networkTest = new _net2.default(test, 'udp', null, _call2.default.isReflexive);
       networkTest.run();
     }));
   }
@@ -5547,7 +5547,7 @@ function buildNetworkSuite(config, filter) {
     // Test whether it can connect via TCP to a TURN server
     // Get a TURN config, and try to get a relay candidate using TCP.
     networkSuite.add(new _testCase2.default(networkSuite, TESTS.TCPENABLED, function (test) {
-      var networkTest = new _net2.default(test, 'tcp', null, _call2.default.isRelay);
+      var networkTest = new _net2.default(test, 'tcp', null, _call2.default.isReflexive);
       networkTest.run();
     }));
   }
@@ -5614,16 +5614,18 @@ function buildThroughputSuite(config, filter) {
     }));
   }
 
-  if (!filter.includes(TESTS.VIDEOBANDWIDTH)) {
+  /*if (!filter.includes(TESTS.VIDEOBANDWIDTH)) {
     // Measures video bandwidth estimation performance by doing a loopback call via
     // relay candidates for 40 seconds. Computes rtt and bandwidth estimation
     // average and maximum as well as time to ramp up (defined as reaching 75% of
     // the max bitrate. It reports infinite time to ramp up if never reaches it.
-    throughputSuite.add(new _testCase2.default(throughputSuite, TESTS.VIDEOBANDWIDTH, function (test) {
-      var videoBandwidthTest = new _videoBandwidth2.default(test);
-      videoBandwidthTest.run();
-    }));
-  }
+    throughputSuite.add(
+      new TestCase(throughputSuite, TESTS.VIDEOBANDWIDTH, test => {
+        var videoBandwidthTest = new VideoBandwidthTest(test);
+        videoBandwidthTest.run();
+      })
+    );
+  }*/
 
   if (!filter.includes(TESTS.NETWORKLATENCY)) {
     throughputSuite.add(new _testCase2.default(throughputSuite, TESTS.NETWORKLATENCY, function (test) {
@@ -5891,10 +5893,10 @@ function initTests() {
     this.suites.push(micSuite);
   }
 
-  if (!this.filter.includes(this.SUITES.CAMERA)) {
-    var cameraSuite = Config.buildCameraSuite(this.config, this.filter);
+  /*if (!this.filter.includes(this.SUITES.CAMERA)) {
+    const cameraSuite = Config.buildCameraSuite(this.config, this.filter);
     this.suites.push(cameraSuite);
-  }
+  }*/
 
   if (!this.filter.includes(this.SUITES.NETWORK)) {
     var networkSuite = Config.buildNetworkSuite(this.config, this.filter);
@@ -6322,7 +6324,7 @@ function RunConnectivityTest(test, iceCandidateFilter) {
 
 RunConnectivityTest.prototype = {
   run: function run() {
-    _Call2.default.asyncCreateTurnConfig(this.start.bind(this), this.test.reportFatal.bind(this.test), this.test);
+    _Call2.default.asyncCreateStunConfig(this.start.bind(this), this.test.reportFatal.bind(this.test), this.test);
   },
 
   start: function start(config) {
@@ -6430,12 +6432,14 @@ function DataChannelThroughputTest(test) {
 
 DataChannelThroughputTest.prototype = {
   run: function run() {
-    _Call2.default.asyncCreateTurnConfig(this.start.bind(this), this.test.reportFatal.bind(this.test), this.test);
+    _Call2.default.asyncCreateStunConfig(this.start.bind(this), this.test.reportFatal.bind(this.test), this.test);
   },
 
   start: function start(config) {
+
+    console.log("DAta Throughput Test started");
     this.call = new _Call2.default(config, this.test);
-    this.call.setIceCandidateFilter(_Call2.default.isRelay);
+    //this.call.setIceCandidateFilter(Call.isReflexive);
     this.senderChannel = this.call.pc1.createDataChannel(null);
     this.senderChannel.addEventListener('open', this.sendingStep.bind(this));
 
@@ -6462,6 +6466,7 @@ DataChannelThroughputTest.prototype = {
       }
       this.sentPayloadBytes += this.samplePacket.length;
       this.senderChannel.send(this.samplePacket);
+      //console.log("Message Sent = " + this.samplePacket);
     }
 
     if (now - this.startTime >= 1000 * this.testDurationSeconds) {
@@ -6474,6 +6479,7 @@ DataChannelThroughputTest.prototype = {
   },
 
   onMessageReceived: function onMessageReceived(event) {
+    //console.log("MEssage Received");
     this.receivedPayloadBytes += event.data.length;
     var now = new Date();
     if (now - this.lastBitrateMeasureTime >= 1000) {
@@ -6490,6 +6496,9 @@ DataChannelThroughputTest.prototype = {
       var elapsedTime = Math.round((now - this.startTime) * 10) / 10000.0;
       var receivedKBits = this.receivedPayloadBytes * 8 / 1000;
       this.test.reportSuccess('Total transmitted: ' + receivedKBits + ' kilo-bits in ' + elapsedTime + ' seconds.');
+      var bandwidth = receivedKBits / (8 * elapsedTime);
+      var codecBandwidth = 30;
+      console.log("Simultaneous Calls  Assuming 30Kbps" + bandwidth / codecBandwidth);
       this.test.done();
     }
   }
@@ -6738,7 +6747,8 @@ NetworkTest.prototype = {
     if (this.iceCandidateFilter.toString() === _Call2.default.isIpv6.toString()) {
       this.gatherCandidates(null, this.params, this.iceCandidateFilter);
     } else {
-      _Call2.default.asyncCreateTurnConfig(this.start.bind(this), this.test.reportFatal.bind(this.test), this.test);
+      console.log("#### Inside run function ####");
+      _Call2.default.asyncCreateStunConfig(this.start.bind(this), this.test.reportFatal.bind(this.test), this.test);
     }
   },
 
@@ -6758,14 +6768,16 @@ NetworkTest.prototype = {
       var newUrls = [];
       for (var j = 0; j < iceServer.urls.length; ++j) {
         var uri = iceServer.urls[j];
+        console.log("####New URI = " + uri);
         if (uri.indexOf(transport) !== -1) {
           newUrls.push(uri);
-        } else if (uri.indexOf('?transport=') === -1 && uri.startsWith('turn')) {
+        } else if (uri.indexOf('?transport=') === -1 && uri.startsWith('stun')) {
           newUrls.push(uri + '?' + transport);
         }
       }
       if (newUrls.length !== 0) {
         iceServer.urls = newUrls;
+        console.log("####NEw URLS ==  == " + newUrls);
         newIceServers.push(iceServer);
       }
     }
@@ -6891,7 +6903,7 @@ VideoBandwidthTest.prototype = {
 
   start: function start(config) {
     this.call = new _call2.default(config, this.test);
-    this.call.setIceCandidateFilter(_call2.default.isRelay);
+    //this.call.setIceCandidateFilter(Call.isRelay);
     // FEC makes it hard to study bandwidth estimation since there seems to be
     // a spike when it is enabled and disabled. Disable it for now. FEC issue
     // tracked on: https://code.google.com/p/webrtc/issues/detail?id=3050
@@ -7350,25 +7362,28 @@ Call.cachedIceConfigFetchTime_ = null;
 // Get a TURN config, either from settings or from network traversal server.
 Call.asyncCreateTurnConfig = function (onSuccess, onError, currentTest) {
   var settings = currentTest.settings;
-  var iceServer = {
-    'username': settings.turnUsername || '',
-    'credential': settings.turnCredential || '',
-    'urls': settings.turnURI.split(',')
+  if (settings.turnURI) {
+
+    var iceServer = {
+      'username': settings.turnUsername || '',
+      'credential': settings.turnCredential || '',
+      'urls': settings.turnURI.split(',')
+    };
+    var config = { 'iceServers': [iceServer] };
+    report.traceEventInstant('turn-config', config);
+    setTimeout(onSuccess.bind(null, config), 0);
   };
-  var config = { 'iceServers': [iceServer] };
-  report.traceEventInstant('turn-config', config);
-  setTimeout(onSuccess.bind(null, config), 0);
 };
 
 // Get a STUN config, either from settings or from network traversal server.
-Call.asyncCreateStunConfig = function (onSuccess, onError) {
+Call.asyncCreateStunConfig = function (onSuccess, onError, currentTest) {
   var settings = currentTest.settings;
   var iceServer = {
     'urls': settings.stunURI.split(',')
   };
   var config = { 'iceServers': [iceServer] };
   report.traceEventInstant('stun-config', config);
-  setTimeout(onSuccess.bind(null, config), 0);
+  setTimeout(onSuccess.bind(null, config), 5);
 };
 
 exports.default = Call;
@@ -8063,4 +8078,4 @@ function enumerateStats(stats, localTrackIds, remoteTrackIds) {
 }
 },{}],34:[function(require,module,exports){
 arguments[4][28][0].apply(exports,arguments)
-},{"./ssim.js":31,"dup":28}]},{},[15,16,17,18,19,21,22,23,24,25,26,29,30,31,32,33,34]);
+},{"./ssim.js":31,"dup":28}]},{},[15,16,17,18,20,19,21,22,23,24,25,26,29,27,30,31,32,33,34,28]);

@@ -14,7 +14,8 @@ NetworkTest.prototype = {
     if (this.iceCandidateFilter.toString() === Call.isIpv6.toString()) {
       this.gatherCandidates(null, this.params, this.iceCandidateFilter);
     } else {
-      Call.asyncCreateTurnConfig(this.start.bind(this),
+      console.log("#### Inside run function ####");
+      Call.asyncCreateStunConfig(this.start.bind(this),
           this.test.reportFatal.bind(this.test), this.test);
     }
   },
@@ -35,15 +36,17 @@ NetworkTest.prototype = {
       var newUrls = [];
       for (var j = 0; j < iceServer.urls.length; ++j) {
         var uri = iceServer.urls[j];
+        console.log("####New URI = " + uri);
         if (uri.indexOf(transport) !== -1) {
           newUrls.push(uri);
         } else if (uri.indexOf('?transport=') === -1 &&
-            uri.startsWith('turn')) {
+            uri.startsWith('stun')) {
           newUrls.push(uri + '?' + transport);
         }
       }
       if (newUrls.length !== 0) {
         iceServer.urls = newUrls;
+        console.log("####NEw URLS ==  == " + newUrls);
         newIceServers.push(iceServer);
       }
     }

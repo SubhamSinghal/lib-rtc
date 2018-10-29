@@ -44,7 +44,7 @@ VideoBandwidthTest.prototype = {
 
   start: function(config) {
     this.call = new Call(config, this.test);
-    this.call.setIceCandidateFilter(Call.isRelay);
+    //this.call.setIceCandidateFilter(Call.isRelay);
     // FEC makes it hard to study bandwidth estimation since there seems to be
     // a spike when it is enabled and disabled. Disable it for now. FEC issue
     // tracked on: https://code.google.com/p/webrtc/issues/detail?id=3050

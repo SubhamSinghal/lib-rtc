@@ -26,13 +26,15 @@ function DataChannelThroughputTest(test) {
 
 DataChannelThroughputTest.prototype = {
   run: function() {
-    Call.asyncCreateTurnConfig(this.start.bind(this),
+    Call.asyncCreateStunConfig(this.start.bind(this),
         this.test.reportFatal.bind(this.test), this.test);
   },
 
   start: function(config) {
+
+    console.log("DAta Throughput Test started");
     this.call = new Call(config, this.test);
-    this.call.setIceCandidateFilter(Call.isRelay);
+    //this.call.setIceCandidateFilter(Call.isReflexive);
     this.senderChannel = this.call.pc1.createDataChannel(null);
     this.senderChannel.addEventListener('open', this.sendingStep.bind(this));
 
@@ -61,6 +63,7 @@ DataChannelThroughputTest.prototype = {
       }
       this.sentPayloadBytes += this.samplePacket.length;
       this.senderChannel.send(this.samplePacket);
+      //console.log("Message Sent = " + this.samplePacket);
     }
 
     if (now - this.startTime >= 1000 * this.testDurationSeconds) {
@@ -74,6 +77,7 @@ DataChannelThroughputTest.prototype = {
   },
 
   onMessageReceived: function(event) {
+    //console.log("MEssage Received");
     this.receivedPayloadBytes += event.data.length;
     var now = new Date();
     if (now - this.lastBitrateMeasureTime >= 1000) {
@@ -93,6 +97,9 @@ DataChannelThroughputTest.prototype = {
       var receivedKBits = this.receivedPayloadBytes * 8 / 1000;
       this.test.reportSuccess('Total transmitted: ' + receivedKBits +
           ' kilo-bits in ' + elapsedTime + ' seconds.');
+      const bandwidth = receivedKBits / (8 * elapsedTime);
+      const codecBandwidth = 30;
+      console.log("Simultaneous Calls  Assuming 30Kbps" + bandwidth / codecBandwidth);
       this.test.done();
     }
   }

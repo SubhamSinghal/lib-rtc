@@ -14,10 +14,10 @@ import TestCase from './testCase.js';
 
 export const TESTS = {
   AUDIOCAPTURE: 'Audio capture',
-  CHECKRESOLUTION240: 'Check resolution 320x240',
+  /*CHECKRESOLUTION240: 'Check resolution 320x240',
   CHECKRESOLUTION480: 'Check resolution 640x480',
   CHECKRESOLUTION720: 'Check resolution 1280x720',
-  CHECKSUPPORTEDRESOLUTIONS: 'Check supported resolutions',
+  CHECKSUPPORTEDRESOLUTIONS: 'Check supported resolutions',*/
   DATATHROUGHPUT: 'Data throughput',
   IPV6ENABLED: 'Ipv6 enabled',
   NETWORKLATENCY: 'Network latency',
@@ -25,13 +25,13 @@ export const TESTS = {
   UDPENABLED: 'Udp enabled',
   TCPENABLED: 'Tcp enabled',
   VIDEOBANDWIDTH: 'Video bandwidth',
-  RELAYCONNECTIVITY: 'Relay connectivity',
+  /*RELAYCONNECTIVITY: 'Relay connectivity',*/
   REFLEXIVECONNECTIVITY: 'Reflexive connectivity',
   HOSTCONNECTIVITY: 'Host connectivity'
 };
 
 export const SUITES = {
-  CAMERA: 'Camera',
+  /*CAMERA: 'Camera',*/
   MICROPHONE: 'Microphone',
   NETWORK: 'Network',
   CONNECTIVITY: 'Connectivity',
@@ -119,7 +119,7 @@ export function buildNetworkSuite(config, filter) {
     // Get a TURN config, and try to get a relay candidate using UDP.
     networkSuite.add(
       new TestCase(networkSuite, TESTS.UDPENABLED, test => {
-        var networkTest = new NetworkTest(test, 'udp', null, Call.isRelay);
+        var networkTest = new NetworkTest(test, 'udp', null, Call.isReflexive);
         networkTest.run();
       })
     );
@@ -130,7 +130,7 @@ export function buildNetworkSuite(config, filter) {
     // Get a TURN config, and try to get a relay candidate using TCP.
     networkSuite.add(
       new TestCase(networkSuite, TESTS.TCPENABLED, test => {
-        var networkTest = new NetworkTest(test, 'tcp', null, Call.isRelay);
+        var networkTest = new NetworkTest(test, 'tcp', null, Call.isReflexive);
         networkTest.run();
       })
     );
@@ -211,7 +211,7 @@ export function buildThroughputSuite(config, filter) {
     );
   }
 
-  if (!filter.includes(TESTS.VIDEOBANDWIDTH)) {
+  /*if (!filter.includes(TESTS.VIDEOBANDWIDTH)) {
     // Measures video bandwidth estimation performance by doing a loopback call via
     // relay candidates for 40 seconds. Computes rtt and bandwidth estimation
     // average and maximum as well as time to ramp up (defined as reaching 75% of
@@ -222,7 +222,7 @@ export function buildThroughputSuite(config, filter) {
         videoBandwidthTest.run();
       })
     );
-  }
+  }*/
 
   if (!filter.includes(TESTS.NETWORKLATENCY)) {
     throughputSuite.add(

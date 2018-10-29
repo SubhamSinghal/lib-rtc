@@ -35,10 +35,10 @@ function initTests() {
     this.suites.push(micSuite);
   }
 
-  if (!this.filter.includes(this.SUITES.CAMERA)) {
+  /*if (!this.filter.includes(this.SUITES.CAMERA)) {
     const cameraSuite = Config.buildCameraSuite(this.config, this.filter);
     this.suites.push(cameraSuite);
-  }
+  }*/
 
   if (!this.filter.includes(this.SUITES.NETWORK)) {
     const networkSuite = Config.buildNetworkSuite(this.config, this.filter);

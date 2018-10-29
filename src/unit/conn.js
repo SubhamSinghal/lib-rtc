@@ -11,7 +11,7 @@ function RunConnectivityTest(test, iceCandidateFilter) {
 
 RunConnectivityTest.prototype = {
   run: function() {
-    Call.asyncCreateTurnConfig(this.start.bind(this),
+    Call.asyncCreateStunConfig(this.start.bind(this),
         this.test.reportFatal.bind(this.test),
         this.test);
   },

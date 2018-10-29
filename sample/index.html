@@ -9,11 +9,8 @@
   <script type="text/javascript" src="../dist/testrtc-min.js"></script>
   <script type="text/javascript">
     const testRTC = new TestRTC({
-      turnUsername: 'USERNAME',
-      turnCredential: 'PASSWORD',
-      turnURI: 'YOUR_TURN_URL',
-      strunURI: 'stun:stun.1.google.com:19302',
-    }, filter = [TestRTC.TESTS.NETWORKLATENCY, TestRTC.TESTS.NETWORKLATENCYRELAY, TestRTC.SUITES.NETWORK]);
+      stunURI: 'stun:stun.l.google.com:19302',
+    }, filter = [TestRTC.TESTS.NETWORKLATENCYRELAY, TestRTC.TESTS.CHECKRESOLUTION240, TestRTC.TESTS.CHECKRESOLUTION480, TestRTC.TESTS.CHECKRESOLUTION720, TestRTC.TESTS.CHECKSUPPORTEDRESOLUTIONS]);
 
     testRTC.onTestReport((suite, test, level, message) => {
       if (level === 'info') console.info(`[${suite}-${test}: INFO] ${message}`);
