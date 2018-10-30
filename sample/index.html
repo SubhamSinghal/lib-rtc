@@ -7,7 +7,13 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <script type="text/javascript" src="../dist/testrtc-min.js"></script>
+  <script src="SIPml-api.js" type="text/javascript"> </script>
+
   <script type="text/javascript">
+
+    //global stack variable
+    let sipStack = null;
+
     const testRTC = new TestRTC({
       stunURI: 'stun:stun.l.google.com:19302',
     }, filter = [TestRTC.TESTS.NETWORKLATENCYRELAY, TestRTC.TESTS.CHECKRESOLUTION240, TestRTC.TESTS.CHECKRESOLUTION480, TestRTC.TESTS.CHECKRESOLUTION720, TestRTC.TESTS.CHECKSUPPORTEDRESOLUTIONS]);
@@ -26,10 +32,112 @@
     testRTC.onStopped(() => { console.log("Tests stopped") });
     testRTC.onComplete(() => { console.log("Tests finished") });
 
-    testRTC.start();
+    function testWebsocketSupport(){
+
+      if(window.WebSocket){
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    function stopStack(){
+      if(sipStack){
+        sipStack.stop();
+      }
+    }
+
+    function onSipEventStack(e) {
+            
+            switch (e.type) {
+                case 'started':
+                    {
+                      console.log("Stack Started");
+                        // catch exception for IE (DOM not ready)
+                        try {
+                            // LogIn (REGISTER) as soon as the stack finish starting
+                            var oSipSessionRegister = this.newSession('register', {
+                                expires: 200,
+                                sip_caps: [
+                                            { name: '+g.oma.sip-im', value: null },
+                                            //{ name: '+sip.ice' }, // rfc5768: FIXME doesn't work with Polycom TelePresence
+                                            { name: '+audio', value: null },
+                                            { name: 'language', value: '\"en,fr\"' }
+                                ]
+                            });
+                            oSipSessionRegister.register();
+                           var callSession = this.newSession('call-audio',{
+                             audio_remote: document.getElementById('audio-remote'), 
+                             events_listener: { events: '*', listener: onSipEventStack }
+                           });                                              
+                            callSession.call('100');
+
+                        }
+                        catch (e) {
+                            console.log("Error = " + e);
+                        }
+                        break;
+                    }
+                case 'failed_to_start':
+                    {  
+                        console.log("Failed to create stack, Staring other tests");
+                        testRTC.start();
+                        break;
+                    }
+                  case 'terminated':
+                  {
+                    console.log("Call Hungup");
+                    testRTC.start();
+                    stopStack();
+                    
+                    break;
+                  }
+
+                case 'starting': default: break;
+            }
+        }
+
+    function testCall(){
+
+       SIPml.init(
+          function(e){
+             sipStack =  new SIPml.Stack({
+
+              realm: '172.16.16.45',
+              impi:'sipML5',
+              impu: 'sip:sipML5@172.16.16.45',
+              password: 'test123',
+              display_name: 'sipML5',
+              enable_rtcweb_breaker: true,
+              websocket_proxy_url: 'wss://172.16.16.45:8089/ws',
+
+              events_listener: { events: '*', listener: onSipEventStack },
+              sip_headers: [
+                        { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2016.03.04' },
+                        { name: 'Organization', value: 'Doubango Telecom' }
+              ]
+            });
+
+            if(sipStack.start()){
+              console.log("Stack started");
+            }else{
+              console.log("Failed to start");
+            }
+          });
+    }
+
+    if(testWebsocketSupport()){
+      console.log("WebSoket is supportd by browser");
+      
+    }else{
+      console.log("WebSocket is not supportd");
+    }
+
+    testCall();
   </script>
 </head>
 <body>
   <h1>Hello, TestRTC</h1>
+  <audio id = 'audio-remote' controls autoplay> </audio>
 </body>
 </html>

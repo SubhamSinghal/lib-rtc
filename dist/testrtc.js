@@ -5643,7 +5643,7 @@ function buildThroughputSuite(config, filter) {
 
   return throughputSuite;
 }
-},{"../unit/camresolutions.js":20,"../unit/conn.js":21,"../unit/dataBandwidth.js":22,"../unit/mic.js":23,"../unit/net.js":24,"../unit/videoBandwidth.js":25,"../unit/wifiPeriodicScan.js":26,"../util/call.js":29,"./suite.js":16,"./testCase.js":17}],16:[function(require,module,exports){
+},{"../unit/camresolutions.js":19,"../unit/conn.js":20,"../unit/dataBandwidth.js":21,"../unit/mic.js":22,"../unit/net.js":23,"../unit/videoBandwidth.js":24,"../unit/wifiPeriodicScan.js":25,"../util/call.js":28,"./suite.js":16,"./testCase.js":17}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6299,9 +6299,7 @@ CamResolutionsTest.prototype = {
 };
 
 exports.default = CamResolutionsTest;
-},{"../util/Call.js":27,"../util/VideoFrameChecker.js":28,"../util/report.js":30,"../util/util.js":33}],20:[function(require,module,exports){
-arguments[4][19][0].apply(exports,arguments)
-},{"../util/Call.js":27,"../util/VideoFrameChecker.js":28,"../util/report.js":30,"../util/util.js":33,"dup":19}],21:[function(require,module,exports){
+},{"../util/Call.js":26,"../util/VideoFrameChecker.js":27,"../util/report.js":29,"../util/util.js":32}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6394,7 +6392,7 @@ RunConnectivityTest.prototype = {
 };
 
 exports.default = RunConnectivityTest;
-},{"../util/Call.js":27}],22:[function(require,module,exports){
+},{"../util/Call.js":26}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6498,14 +6496,14 @@ DataChannelThroughputTest.prototype = {
       this.test.reportSuccess('Total transmitted: ' + receivedKBits + ' kilo-bits in ' + elapsedTime + ' seconds.');
       var bandwidth = receivedKBits / (8 * elapsedTime);
       var codecBandwidth = 30;
-      console.log("Simultaneous Calls  Assuming 30Kbps" + bandwidth / codecBandwidth);
+      console.log("Simultaneous Calls  Assuming 30Kbps " + Math.floor(bandwidth / codecBandwidth));
       this.test.done();
     }
   }
 };
 
 exports.default = DataChannelThroughputTest;
-},{"../util/Call.js":27}],23:[function(require,module,exports){
+},{"../util/Call.js":26}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6721,7 +6719,7 @@ MicTest.prototype = {
 };
 
 exports.default = MicTest;
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6846,7 +6844,7 @@ NetworkTest.prototype = {
 };
 
 exports.default = NetworkTest;
-},{"../util/Call.js":27}],25:[function(require,module,exports){
+},{"../util/Call.js":26}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7022,7 +7020,7 @@ VideoBandwidthTest.prototype = {
 };
 
 exports.default = VideoBandwidthTest;
-},{"../util/call.js":29,"../util/stats.js":32,"webrtc-adapter":3}],26:[function(require,module,exports){
+},{"../util/call.js":28,"../util/stats.js":31,"webrtc-adapter":3}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7126,7 +7124,7 @@ WiFiPeriodicScanTest.prototype = {
 };
 
 exports.default = WiFiPeriodicScanTest;
-},{"../util/call.js":29,"../util/report.js":30,"../util/util.js":33}],27:[function(require,module,exports){
+},{"../util/call.js":28,"../util/report.js":29,"../util/util.js":32}],26:[function(require,module,exports){
 /*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
@@ -7387,7 +7385,7 @@ Call.asyncCreateStunConfig = function (onSuccess, onError, currentTest) {
 };
 
 exports.default = Call;
-},{"./report.js":30,"./util.js":33,"webrtc-adapter":3}],28:[function(require,module,exports){
+},{"./report.js":29,"./util.js":32,"webrtc-adapter":3}],27:[function(require,module,exports){
 /*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
@@ -7482,9 +7480,9 @@ VideoFrameChecker.prototype = {
 if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
   module.exports = VideoFrameChecker;
 }
-},{"./ssim.js":31}],29:[function(require,module,exports){
-arguments[4][27][0].apply(exports,arguments)
-},{"./report.js":30,"./util.js":33,"dup":27,"webrtc-adapter":3}],30:[function(require,module,exports){
+},{"./ssim.js":30}],28:[function(require,module,exports){
+arguments[4][26][0].apply(exports,arguments)
+},{"./report.js":29,"./util.js":32,"dup":26,"webrtc-adapter":3}],29:[function(require,module,exports){
 /*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
@@ -7627,7 +7625,7 @@ Report.getSystemInfo = function () {
 };
 
 exports.default = Report;
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
@@ -7720,7 +7718,7 @@ Ssim.prototype = {
 if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
   module.exports = Ssim;
 }
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
@@ -7772,7 +7770,7 @@ StatisticsAggregate.prototype = {
 };
 
 exports.default = StatisticsAggregate;
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
@@ -8076,6 +8074,6 @@ function enumerateStats(stats, localTrackIds, remoteTrackIds) {
   }
   return statsObject;
 }
-},{}],34:[function(require,module,exports){
-arguments[4][28][0].apply(exports,arguments)
-},{"./ssim.js":31,"dup":28}]},{},[15,16,17,18,20,19,21,22,23,24,25,26,29,27,30,31,32,33,34,28]);
+},{}],33:[function(require,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"./ssim.js":30,"dup":27}]},{},[15,16,17,18,19,20,21,22,23,24,25,28,26,29,30,31,32,33,27]);

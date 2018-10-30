@@ -99,7 +99,7 @@ DataChannelThroughputTest.prototype = {
           ' kilo-bits in ' + elapsedTime + ' seconds.');
       const bandwidth = receivedKBits / (8 * elapsedTime);
       const codecBandwidth = 30;
-      console.log("Simultaneous Calls  Assuming 30Kbps" + bandwidth / codecBandwidth);
+      console.log("Simultaneous Calls  Assuming 30Kbps " + Math.floor(bandwidth / codecBandwidth));
       this.test.done();
     }
   }
