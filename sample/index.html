@@ -367,13 +367,13 @@
           function(e){
              sipStack =  new SIPml.Stack({
 
-              realm: '172.16.16.45',
+              realm: 'call-2020.highradius.com',
               impi:'sipML5',
-              impu: 'sip:sipML5@172.16.16.45',
+              impu: 'sip:sipML5@call-2020.highradius.com',
               password: 'test123',
               display_name: 'sipML5',
               enable_rtcweb_breaker: true,
-              websocket_proxy_url: 'wss://172.16.16.45:8089/ws',
+              websocket_proxy_url: ' wss://call-2020.highradius.com/ws',
 
               events_listener: { events: '*', listener: onSipEventStack },
               sip_headers: [
