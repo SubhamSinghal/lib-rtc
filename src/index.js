@@ -1,4 +1,4 @@
-import * as Config from 'config';
+import * as Config from './config';
 import adapter from 'webrtc-adapter';
 
 function runAllSequentially(
