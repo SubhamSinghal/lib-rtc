@@ -233,7 +233,7 @@
     let x = document.forms[0];
     console.log(x.elements[0].value);
     description = x.elements[0].value;
-  download("TestRTC.log","{[test]: WebRTC Troubleshooter bug report, [description]: " + description + "}\n\n\n" + " \n\n" + micLog + "\n\n"+ networkLog + "\n\n" + connectivityLog + "\n \n" + throughputLog);
+  download("TestRTC.log","{[test]: WebRTC Troubleshooter bug report, [description]: " + description + "}\n\n\n" +systemLog+ " \n\n" + micLog + "\n\n"+ networkLog + "\n\n" + connectivityLog + "\n \n" + throughputLog);
   });
 
     //global stack variable
@@ -242,6 +242,7 @@
     let colorNetwork = null;
     let colorConnectivity = null;
     let colorThroughput = null;
+    let systemLog = "";
     let micLog = 'MICROPHONE LOGS';
     let networkLog = 'NETWORK LOGS';
     let connectivityLog = 'CONNECTIVITY LOGS';
@@ -449,6 +450,7 @@
                     }
                 case 'failed_to_start':
                     {  
+                        systemLog += "\nWebSocket connection to " + websocket_proxy_url + " Failed: Error in connection establishment";
                         console.log("Failed to create stack, Staring other tests");
                         testRTC.start();
                         break;
@@ -456,6 +458,15 @@
                   case 'terminated':
                   {
                     console.log("Call Hungup");
+                    let audioElement = document.getElementById('audio-remote');
+                    let playDuration = audioElement.duration;
+                    let readyState = audioElement.readyState;
+
+                    if(playDuration == 0 || readyState == 0){
+                      systemLog += "\nNo Media received from server";
+                    }else{
+                      systemLog += "\nMedia received from server";
+                    }
                     testRTC.start();
                     stopStack();
                     
@@ -470,6 +481,8 @@
 
        SIPml.init(
           function(e){
+              SIPml.setDebugLevel('fatal');
+              systemLog = "OS = " + SIPml.getSystemFriendlyName() + "\nWebRTC supported = " + SIPml.isWebRtcSupported() + "\nWebSocket supported = " + SIPml.isWebSocketSupported();
              sipStack =  new SIPml.Stack({
 
               realm: 'call-2020.highradius.com',
