@@ -15,22 +15,79 @@
   <!-- endbuild -->
   </head>
   <body>
+
+    <br>
     
+    <div id = "bugModal" class = "modal fade" role = "dialog">
+      <div class = "modal-dialog modal-lg" role = "content">
+        <div class = "modal-content">
+          <div class = "modal-header bg-primary">
+            <h4 class = "modal-title">Create a report</h4>
+            <button type = "button" class = "close" data-dismiss = "modal">&times;</button>
+          </div>
+          <div class = "modal-body">
+            <form id = "form">
+              <div class = "form-group row">
+                <div class = "col-12">
+                  <input type = "text" class = "form-control" id = "issue" name = "issue" placeholder = "Describe Your issue here" >
+                </div>
+              </div>
+              <div class = "form-group row">
+                <div class = "col-12"><b>Note</b></div>
+                <div class = "col-12">The report will contain information about your device including network information that is useful to troubleshoot the issue.</div>
+              </div>
+              <div class = "form-group row">
+                <div class = "offset-md-7 col-md-5">
+                  <button type = "submit" id = "bugReport" class = "btn btn-link btn-sm ml-auto">DOWNLOAD REPORT</button>
+                  <button type = "button" class = "btn btn-link btn-sm ml-auto" data-dismiss="modal">CANCEL</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class = "container">
-     
       <div class = "row">
         <div class = "col-2">
 
         </div> 
         <div class = "col-12 col-sm-8">
-          <div class = "navbar navbar-dark navbar-expand-sm bg-primary text-white">
-            WebRTC Troubleshooter
-          </div>
+          <nav class = "navbar navbar-dark navbar-expand-sm bg-primary text-white">
+            <div class = "container">
+              <button class = "navbar-toggler" type = "button" data-toggle = "collapse" data-target="#NavBar">
+                <span class = "navbar-toggler-icon"></span>
+              </button>
+              <h5 class = "navber-brand mr-auto">WebRTC Troubleshooter</h5>
+              <div class="collapse navbar-collapse" id = "NavBar">
+                <ul class = "navbar-nav mr-auto">
+                  <li class = "navbar-item">
+                  </li>
+                </ul>
+                <span class = "navbar-text">
+                  <ul class = "navbar-nav mr-2">
+                    <li class = "nav-item mr-2">
+                      <!-- <a id = "configureButton"><span class = "fa fa-list fa-lg"></span></a> -->
+                    </li>
+                    <li class = "nav-item mr-2">
+                      <button type = "button"class = "btn btn-link btn-sm ml-auto">
+                        <a id = "bugButton"><span class = "fa fa-bug fa-lg"></span></a>
+                      </button>
+                    </li>
+                    <!--<li class = "nav-item mr-2">
+                      <button type = "button"class = "btn btn-link btn-sm ml-auto">
+                        <a id = "startTest"><b> Start</b></a>
+                      </button>-->
+                    </li>
+                  </ul>
+                </span>
+              </div>
+            </div>
+          </nav>
         </div>
       </div>
-
       <br>
-
       <div class = "row">
         <div class = "col-3">
           
@@ -137,7 +194,6 @@
             </div>
           </div>
         </div>
-    </div>
 
     <!-- jQuery first, then popper.js, then Bootstrap.js-->
     <!-- build:js js/main.js-->
@@ -150,6 +206,35 @@
   <script src="SIPml-api.js" type="text/javascript"> </script>
 
   <script type="text/javascript">
+    $("#form").submit(function(e){
+    return false;
+    });
+
+  $("#bugButton").click(function(){
+    $("#bugModal").modal({
+      show: true
+    });
+  });
+
+  function download(filename, text) {
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+  }
+
+  $("#bugReport").click(function(){
+    let x = document.forms[0];
+    console.log(x.elements[0].value);
+    description = x.elements[0].value;
+  download("TestRTC.log","{[test]: WebRTC Troubleshooter bug report, [description]: " + description + "}\n\n\n" + " \n\n" + micLog + "\n\n"+ networkLog + "\n\n" + connectivityLog + "\n \n" + throughputLog);
+  });
 
     //global stack variable
     let sipStack = null;
@@ -157,13 +242,19 @@
     let colorNetwork = null;
     let colorConnectivity = null;
     let colorThroughput = null;
+    let micLog = 'MICROPHONE LOGS';
+    let networkLog = 'NETWORK LOGS';
+    let connectivityLog = 'CONNECTIVITY LOGS';
+    let throughputLog = 'THROUGHPUT LOGS';
 
     const testRTC = new TestRTC({
       stunURI: 'stun:stun.l.google.com:19302',
     }, filter = [TestRTC.TESTS.NETWORKLATENCYRELAY, TestRTC.TESTS.CHECKRESOLUTION240, TestRTC.TESTS.CHECKRESOLUTION480, TestRTC.TESTS.CHECKRESOLUTION720, TestRTC.TESTS.CHECKSUPPORTEDRESOLUTIONS]);
 
     testRTC.onTestReport((suite, test, level, message) => {
-      if(suite == 'Microphone' && test == 'Audio capture'){
+      if(suite == 'Microphone'){
+      micLog += '\n[' + level + ']: ' + message;
+      if(test == 'Audio capture'){
         document.getElementById('audio_capture_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
         if(level == 'error') {
           colorMic = "bg-danger";
@@ -173,53 +264,65 @@
         }
         $('#microphone').addClass(colorMic?colorMic:'bg-success');
       }
+    }
 
-      if(suite == 'Network') {
-        if(test == 'Udp enabled'){
-          document.getElementById('udp_enabled_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
-        }
-        if(test == 'Tcp enabled'){
-          document.getElementById('tcp_enabled_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
-        }
-        if(test == 'Ipv6 enabled') {
-          document.getElementById('ipv6_enabled_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
-        }
-        if(level == 'error') {
-          colorNetwork = "bg-danger";
-        }
-        else if(level == 'warning' && colorNetwork == null) {
-          console.log("inside network warning");
-          colorNetwork = 'bg-warning';
-        }
-        $('#network').addClass(colorNetwork?colorNetwork:'bg-success');
-      }
+  if(suite == 'Network') {
+    networkLog += '\n[' + level + ']: ' + message;
+    if(test == 'Udp enabled'){
+      document.getElementById('udp_enabled_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
+    }
+    if(test == 'Tcp enabled'){
+      document.getElementById('tcp_enabled_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
+    }
+    if(test == 'Ipv6 enabled') {
+      document.getElementById('ipv6_enabled_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
+    }
+    if(level == 'error') {
+      colorNetwork = "bg-danger";
+    }
+    else if(level == 'warning' && colorNetwork == null) {
+      console.log("inside network warning");
+      colorNetwork = 'bg-warning';
+    }
+    $('#network').addClass(colorNetwork?colorNetwork:'bg-success');
+  }
 
-      if(suite == 'Connectivity') {
-        if(test == 'Reflexive connectivity') {
-          document.getElementById('reflexive_connectivity_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
-        }
-        if(test == 'Host connectivity') {
-          document.getElementById('host_connectivity_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
-        }
-        if(level == 'error') {
-          colorConnectivity = "bg-danger";
-        }
-        else if(level == 'warning' && colorConnectivity == null) {
-          colorConnectivity = 'bg-warning';
-        }
-        $('#connection').addClass(colorConnectivity?colorConnectivity:'bg-success');
-      }
+  if(suite == 'Connectivity') {
 
-      if(suite == 'Throughput' && test == 'Data throughput') {
-        document.getElementById('data_throughput_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
-        if(level == 'error') {
-          colorThroughput = "bg-danger";
-        }
-        else if(level == 'warning' && colorThroughput == null) {
-          colorThroughput = 'bg-warning';
-        }
-        $('#throughput').addClass(colorThroughput?colorThroughput:'bg-success');
+    console.log(test);
+    connectivityLog += '\n[' + level + ']: ' + message;
+    if(test == 'Reflexive connectivity') {
+      document.getElementById('reflexive_connectivity_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
+    }
+    if(test == 'Host connectivity') {
+      document.getElementById('host_connectivity_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
+    }
+    if(test == 'Relay connectivity') {
+      document.getElementById('relay_connectivity_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
+    }
+    if(level == 'error') {
+      colorConnectivity = "bg-danger";
+    }
+    else if(level == 'warning' && colorConnectivity == null) {
+      colorConnectivity = 'bg-warning';
+    }
+    $('#connection').addClass(colorConnectivity?colorConnectivity:'bg-success');
+  }
+
+  if(suite == 'Throughput') {
+    throughputLog += '\n[' + level + ']: ' + message;
+    if(test == 'Data throughput') {
+      document.getElementById('data_throughput_result').innerHTML += '</br>' + '[<b>' + level + '</b>]: ' + message;
+      if(level == 'error') {
+        colorThroughput = "bg-danger";
       }
+      else if(level == 'warning' && colorThroughput == null) {
+        colorThroughput = 'bg-warning';
+      }
+      $('#throughput').addClass(colorThroughput?colorThroughput:'bg-success');
+    }
+  }
+
 
 
       if (level === 'info') console.info(`[${suite}-${test}: INFO] ${message}`);
