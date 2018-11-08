@@ -6497,9 +6497,10 @@ DataChannelThroughputTest.prototype = {
       var elapsedTime = Math.round((now - this.startTime) * 10) / 10000.0;
       var receivedKBits = this.receivedPayloadBytes * 8 / 1000;
       this.test.reportSuccess('Total transmitted: ' + receivedKBits + ' kilo-bits in ' + elapsedTime + ' seconds.');
-      var bandwidth = receivedKBits / (8 * elapsedTime);
-      var codecBandwidth = 30;
-      console.log("Simultaneous Calls  Assuming 30Kbps " + Math.floor(bandwidth / codecBandwidth));
+      var bandwidth = receivedKBits / elapsedTime;
+      var codecBandwidth = 100;
+      var simultaneousCalls = Math.floor(bandwidth / codecBandwidth);
+      this.test.reportSuccess(simultaneousCalls + " Simultaneous Calls  Assuming 100Kbits/s");
       this.test.done();
     }
   }
