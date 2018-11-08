@@ -74,11 +74,10 @@
                       <button type = "button"class = "btn btn-link btn-sm ml-auto">
                         <a id = "bugButton"><span class = "fa fa-bug fa-lg"></span></a>
                       </button>
-                    </li>
-                    <!--<li class = "nav-item mr-2">
+                    </li><li class = "nav-item mr-2">
                       <button type = "button"class = "btn btn-link btn-sm ml-auto">
                         <a id = "startTest"><b> Start</b></a>
-                      </button>-->
+                      </button>
                     </li>
                   </ul>
                 </span>
@@ -216,6 +215,12 @@
     });
   });
 
+    let systemLog = "";
+    let micLog = 'MICROPHONE LOGS';
+    let networkLog = 'NETWORK LOGS';
+    let connectivityLog = 'CONNECTIVITY LOGS';
+    let throughputLog = 'THROUGHPUT LOGS';
+
   function download(filename, text) {
   var element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -236,17 +241,13 @@
   download("TestRTC.log","{[test]: WebRTC Troubleshooter bug report, [description]: " + description + "}\n\n\n" +systemLog+ " \n\n" + micLog + "\n\n"+ networkLog + "\n\n" + connectivityLog + "\n \n" + throughputLog);
   });
 
+    $('#startTest').click(function(){
     //global stack variable
     let sipStack = null;
     let colorMic = null;
     let colorNetwork = null;
     let colorConnectivity = null;
     let colorThroughput = null;
-    let systemLog = "";
-    let micLog = 'MICROPHONE LOGS';
-    let networkLog = 'NETWORK LOGS';
-    let connectivityLog = 'CONNECTIVITY LOGS';
-    let throughputLog = 'THROUGHPUT LOGS';
 
     const testRTC = new TestRTC({
       stunURI: 'stun:stun.l.google.com:19302',
@@ -334,7 +335,7 @@
     });
 
     testRTC.onGlobalProgress((finished, remaining) => { console.log(`[TestRTC update] ${finished} finished, ${remaining} remaining`)});
-    testRTC.onTestProgress((suite, test, progress) => { /*console.log(`[${suite}-${test}] progress: ${progress}`)*/});
+    testRTC.onTestProgress((suite, test, progress) => { console.log(`[${suite}-${test}] progress: ${progress}`)});
     testRTC.onTestResult((suite, test, status) => { console.log(`[${suite}-${test}: RESULT] ${status}`)});
     testRTC.onStopped(() => { console.log("Tests stopped") });
     testRTC.onComplete(() => { console.log("Tests finished") });
@@ -458,7 +459,7 @@
                   case 'terminated':
                   {
                     console.log("Call Hungup");
-                   /* let audioElement = document.getElementById('audio-remote');
+                    let audioElement = document.getElementById('audio-remote');
                     let playDuration = audioElement.duration;
                     let readyState = audioElement.readyState;
 
@@ -466,18 +467,12 @@
                       systemLog += "\nNo Media received from server";
                     }else{
                       systemLog += "\nMedia received from server";
-                    }*/
+                    }
                     testRTC.start();
                     stopStack();
                     
                     break;
                   }
-                  case 'm_permission_refused' :
-                  {
-                    systemLog += "\nMic permission denied";
-                    break;
-                  }
-
 
                 case 'starting': default: break;
             }
@@ -522,6 +517,7 @@
     }
 
     testCall();
+  })
   </script>
   <audio id='audio-remote' autoplay="autoplay"></audio>
   </body>
