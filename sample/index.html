@@ -334,7 +334,7 @@
     });
 
     testRTC.onGlobalProgress((finished, remaining) => { console.log(`[TestRTC update] ${finished} finished, ${remaining} remaining`)});
-    testRTC.onTestProgress((suite, test, progress) => { console.log(`[${suite}-${test}] progress: ${progress}`)});
+    testRTC.onTestProgress((suite, test, progress) => { /*console.log(`[${suite}-${test}] progress: ${progress}`)*/});
     testRTC.onTestResult((suite, test, status) => { console.log(`[${suite}-${test}: RESULT] ${status}`)});
     testRTC.onStopped(() => { console.log("Tests stopped") });
     testRTC.onComplete(() => { console.log("Tests finished") });
@@ -458,7 +458,7 @@
                   case 'terminated':
                   {
                     console.log("Call Hungup");
-                    let audioElement = document.getElementById('audio-remote');
+                   /* let audioElement = document.getElementById('audio-remote');
                     let playDuration = audioElement.duration;
                     let readyState = audioElement.readyState;
 
@@ -466,12 +466,18 @@
                       systemLog += "\nNo Media received from server";
                     }else{
                       systemLog += "\nMedia received from server";
-                    }
+                    }*/
                     testRTC.start();
                     stopStack();
                     
                     break;
                   }
+                  case 'm_permission_refused' :
+                  {
+                    systemLog += "\nMic permission denied";
+                    break;
+                  }
+
 
                 case 'starting': default: break;
             }
